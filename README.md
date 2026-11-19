@@ -30,7 +30,7 @@ Nazwy własne są wzorowane na historycznych nazwach angielskich i niemieckich
   Wykrywa je pies (węch), szczeknięcie albo jasne światło latarni.
 - **Pies** walczy sam, gryzie szczury i wywęszy ukryte. Gdy zostanie ranny, stań przy
   nim przez chwilę, żeby go podnieść. Mięso leczy szczurołapa i psa.
-- **Wycie Bodo** (przytrzymanie X): pies staje i wyje, a szczury w promieniu ok. 5 kratek
+- **Wycie Bodo** (trzymany spust/bumper): pies staje i wyje, a szczury w promieniu ok. 5 kratek
   uciekają od niego (poza królem). Zużywa wytrzymałość psa (niebieski pasek pod ikoną
   psa). Po wyczerpaniu pies musi chwilę odpocząć.
 
@@ -40,12 +40,14 @@ Nazwy własne są wzorowane na historycznych nazwach angielskich i niemieckich
 |---|---|
 | lewy analog / krzyżak | ruch szczurołapa |
 | **O** | cios pałką |
-| **X** (krótko) | przełącz: sterowanie psem / szczurołapem |
-| **X** (przytrzymaj) | wycie Bodo, odstrasza szczury |
+| **X** | przełącz: sterowanie psem / szczurołapem |
 | **O** w trybie psa | szczeknięcie (odsłania ukryte szczury, ogłusza pobliskie) |
-| prawy analog (= gracz 2) | ruch psa w trybie psa |
-| O gracza 2 | szczeknięcie |
-| X gracza 2 (trzymany) | wycie |
+| prawy analog (zmapowany na kierunki gracza 2) | ruch psa w trybie psa |
+| spust/bumper (zmapowany na O lub X gracza 2), trzymany | wycie Bodo |
+
+Gdy sterujesz szczurołapem, Bodo działa sam: trzyma się blisko, atakuje szczury w pobliżu,
+węszy ukryte i dogania pana, gdy zostanie w tyle. To gra jednoosobowa, a „gracz 2” to
+tylko sposób, w jaki PICO-8 odczytuje dodatkowe przyciski.
 
 Gra sama wykrywa, czy drugi analog działa. Jeśli wejście gracza 2 nigdy się nie pojawi,
 w trybie psa **lewy analog steruje psem**, a szczurołap stoi w miejscu. Pies nie może
@@ -66,11 +68,16 @@ w pamięci kartridża.
 Poziom łatwy daje wolniejsze szczury (×0.8), mniejsze fale, dłuższą nietykalność po
 ciosie, wolniejsze zużycie oleju i rzadsze strzałki szczuroludzi.
 
-## Spust zamiast X?
+## Spust / bumper i prawy analog
 
-PICO-8 nie widzi spustów (L/R) ani analogów, a jedynie 6 przycisków na gracza. Dlatego
-wycie jest pod **przytrzymanym X**. Jeśli system konsoli mapuje spust na X albo na
-X gracza 2, przytrzymanie spustu zadziała tak samo.
+PICO-8 widzi tylko 6 przycisków na gracza (4 kierunki, O, X). Spusty, bumpery i prawy
+analog działają tylko wtedy, gdy system lub port PICO-8 przypisze je do przycisków
+**gracza 2** (np. przez gptokeyb jako klawisze `S F E D` dla kierunków oraz `Tab`/`Q`
+dla O/X). Lewy analog zwykle działa jak krzyżak gracza 1.
+
+W menu jest **test przycisków**. Pokazuje, które przyciski gracza 1 i 2 PICO-8 widzi,
+pozycję myszy oraz wciśnięte klawisze (kody). Wyjście: O+X. Dzięki temu sprawdzisz na
+konsoli, czy bumpery, spusty i prawy analog w ogóle docierają do gry.
 
 ## Wgranie na Anbernic RG35XX H
 

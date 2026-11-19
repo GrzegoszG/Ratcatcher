@@ -5,7 +5,7 @@ __lua__
 -- podziemia kesselburga
 
 function setl()
- T=split(lang==0 and "szczurolap|podziemia kesselburga|ruch: analog / krzyzak|o: cios palka  x: tryb psa|tryb psa: o = szczekniecie|trzymaj x: wycie bodo|2. analog (gracz 2): bodo|rekord: |start|jezyk: polski|trudnosc: latwa|trudnosc: normalna|glebokosc |sterujesz bodo|sterujesz ulrichem|kaganek zapalony|zniszcz gniazda: |olej do latarni|mieso! zdrowie wraca|bodo wstaje!|bodo cos wyczul!|fala szczurow!|bodo ranny! stan przy nim|wlaz w dol otwarty!|gniazdo zniszczone!|grimbald, krol szczurow, padl!|ulrich zginal...|ubite szczury: |nacisnij o|bodo wyje! szczury uciekaja|piwnice kesselburga|kanaly fleetgraben|groty przemytnikow z wapping|tunele szczuroludzi unterhaus|czelusci hollenschlundu|zniszcz gniazda i otworz wlaz|woda spowalnia, szczury zarazone|ciemne groty: oszczedzaj olej|szczuroludzie rzucaja strzalki|pokonaj krola grimbalda!" or "ratcatcher|beneath kesselburg|move: stick / d-pad|o: club   x: dog mode|dog mode: o = bark|hold x: bodo howls|2nd stick (player 2): bodo|best: |start|language: english|difficulty: easy|difficulty: normal|depth |controlling bodo|controlling ulrich|lamp lit|destroy nests: |lantern oil|meat! health restored|bodo is back up!|bodo smells a rat!|rat wave!|bodo is hurt! stand by him|the hatch is open!|nest destroyed!|grimbald the rat king falls!|ulrich has fallen...|rats killed: |press o|bodo howls! rats flee|kesselburg cellars|fleetgraben sewers|wapping smugglers' caves|unterhaus ratfolk tunnels|the hollenschlund|smash nests, open the hatch|water slows. plague rats ahead|dark caves: save your oil|ratfolk throw darts|slay grimbald the rat king!","|",false)
+ T=split(lang==0 and "szczurolap|podziemia kesselburga|ruch: analog / krzyzak|o: cios palka  x: tryb psa|tryb psa: o = szczekniecie|spust (gracz 2 o/x): wycie|2. analog (gracz 2): bodo|rekord: |start|jezyk: polski|trudnosc: latwa|trudnosc: normalna|glebokosc |sterujesz bodo|sterujesz ulrichem|kaganek zapalony|zniszcz gniazda: |olej do latarni|mieso! zdrowie wraca|bodo wstaje!|bodo cos wyczul!|fala szczurow!|bodo ranny! stan przy nim|wlaz w dol otwarty!|gniazdo zniszczone!|grimbald, krol szczurow, padl!|ulrich zginal...|ubite szczury: |nacisnij o|bodo wyje! szczury uciekaja|piwnice kesselburga|kanaly fleetgraben|groty przemytnikow z wapping|tunele szczuroludzi unterhaus|czelusci hollenschlundu|zniszcz gniazda i otworz wlaz|woda spowalnia, szczury zarazone|ciemne groty: oszczedzaj olej|szczuroludzie rzucaja strzalki|pokonaj krola grimbalda!|test przyciskow|gracz |o+x: wyjscie|trzymane klawisze: " or "ratcatcher|beneath kesselburg|move: stick / d-pad|o: club   x: dog mode|dog mode: o = bark|trigger (p2 o/x): bodo howls|2nd stick (player 2): bodo|best: |start|language: english|difficulty: easy|difficulty: normal|depth |controlling bodo|controlling ulrich|lamp lit|destroy nests: |lantern oil|meat! health restored|bodo is back up!|bodo smells a rat!|rat wave!|bodo is hurt! stand by him|the hatch is open!|nest destroyed!|grimbald the rat king falls!|ulrich has fallen...|rats killed: |press o|bodo howls! rats flee|kesselburg cellars|fleetgraben sewers|wapping smugglers' caves|unterhaus ratfolk tunnels|the hollenschlund|smash nests, open the hatch|water slows. plague rats ahead|dark caves: save your oil|ratfolk throw darts|slay grimbald the rat king!|input test|player |o+x: exit|keys held: ","|",false)
 end
 
 function ht(s)
@@ -28,6 +28,8 @@ function _init()
  ek={split"1,.7,4,1",split"1,.9,3,1",split"3,.55,2,1.5",split"2,1.1,5,1",split"4,.6,4,1",split"30,.45,2,2"}
  pools={split"1",split"1,1,2",split"1,2,3",split"2,3,5",split"2,3,5,5"}
  nb=split"1,-1,64,-64"
+ -- devkit: mysz/klawiatura (tylko do testu przyciskow)
+ poke(0x5f2d,1)
  st,fr,msgt,tm="title",0,0,0
  music(0,0,3)
 end
@@ -287,7 +289,6 @@ function newgame()
  dep,hp,oil,kills,dm,dual=1,5,100,0,false,false
  pl={x=0,y=0,fa=0,iv=0,cd=0,w=0,sw=0}
  dg={hp=4,iv=0,cd=0,bc=0,ex=0,rv=0,w=0,sta=100}
- xh=0
  nextlvl()
 end
 
@@ -352,7 +353,7 @@ function _update()
   if tm<0 then st="play" end
  elseif st=="title" then
   if btnp(2) then mi=max(mi-1,1) end
-  if btnp(3) then mi=min(mi+1,3) end
+  if btnp(3) then mi=min(mi+1,4) end
   if tm<0 and (btnp(4) or btnp(5)) then
    if mi==1 then
     newgame()
@@ -360,12 +361,16 @@ function _update()
     lang=1-lang
     dset(1,lang)
     setl()
-   else
+   elseif mi==3 then
     ez=not ez
     dset(2,ez and 0 or 1)
+   else
+    st,tm="test",15
    end
    sfx(4)
   end
+ elseif st=="test" then
+  if tm<0 and btn(4) and btn(5) then st,tm="title",15 end
  elseif tm<0 and (btnp(4) or btnp(5)) then
   st,tm="title",15
  end
@@ -373,17 +378,12 @@ end
 
 function upplay()
  if btn(0,1) or btn(1,1) or btn(2,1) or btn(3,1) then dual=true end
- -- x: krotko = tryb psa, przytrzymaj = wycie
- if btn(5) then
-  xh=xh+1
- else
-  if xh>0 and xh<8 and not dg.dn then
-   dm=not dm
-   say(T[dm and 14 or 15])
-  end
-  xh=0
+ if btnp(5) and not dg.dn then
+  dm=not dm
+  say(T[dm and 14 or 15])
  end
- how=not dg.dn and dg.sta>0 and (xh>=8 or btn(5,1))
+ -- spust/bumper zmapowany na o lub x gracza 2: wycie
+ how=not dg.dn and dg.sta>0 and (btn(4,1) or btn(5,1))
  local dx,dy=inp(0)
  local gx,gy=0,0
  if dm then
@@ -554,7 +554,7 @@ function updog(gx,gy)
   end
  end
  -- szczekniecie
- if dg.bc<=0 and (btnp(4,1) or dm and btnp(4)) then
+ if dg.bc<=0 and dm and btnp(4) then
   dg.bc,dg.ex=45,20
   sfx(5)
   for e in all(ents) do
@@ -660,6 +660,8 @@ function _draw()
   drtitle()
  elseif st=="intro" then
   drintro()
+ elseif st=="test" then
+  drtest()
  else
   drend()
  end
@@ -678,12 +680,32 @@ function drtitle()
  spr(18+a,x-12,36)
  for i=1,3 do spr(21+a,x-14-i*10,36) end
  for i=3,7 do print(T[i],4,34+i*7,6) end
- for i=1,3 do
-  local c=mi==i and 10 or 5
-  print(T[i==3 and (ez and 11 or 12) or i+8],20,82+i*8,c)
-  if mi==i then print(">",12,82+i*8,c) end
+ for i=1,4 do
+  local c,y=mi==i and 10 or 5,76+i*8
+  print(T[i==3 and (ez and 11 or 12) or i==4 and 41 or i+8],20,y,c)
+  if mi==i then print(">",12,y,c) end
  end
  ctr(T[8]..dget(0),120,13)
+end
+
+-- test przyciskow: co pico-8 widzi z konsoli
+function drtest()
+ cls()
+ ctr(T[41],4,10)
+ for p=0,1 do
+  print(T[42]..(p+1),4,18+p*22,6)
+  for b=0,5 do
+   print(sub("lrudox",b+1,b+1),4+b*10,26+p*22,btn(b,p) and 11 or 5)
+  end
+ end
+ print("mouse "..stat(32)..","..stat(33).." b"..stat(34),4,66,6)
+ print(T[44],4,76,6)
+ local k=""
+ for i=1,255 do
+  if stat(28,i) then k=k..i.." " end
+ end
+ print(k,4,84,11)
+ ctr(T[43],118,13)
 end
 
 function drintro()

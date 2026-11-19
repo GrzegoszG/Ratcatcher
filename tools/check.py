@@ -67,6 +67,7 @@ function split(s,sep,conv) sep=sep or "," local r={}
  return r end
 local dd={}
 function cartdata() end function dget(i) return dd[i] or 0 end function dset(i,v) dd[i]=v end
+function stat(n) if n==28 then return false end return 0 end function poke() end
 function sfx() end function music() end function cls() end function camera() end
 function pal(a,b) if type(a)=="table" then for c=0,15 do assert(a[c],"pal tbl "..c) end
  elseif a~=nil then assert(type(a)=="number" and type(b)=="number","pal args") end end
@@ -94,9 +95,17 @@ def simulate(games):
     stats = {"levels": 0, "deaths": 0, "wins": 0, "frames": 0}
     for game in range(games):
         if game % 3 == 1:  # przelacz jezyk i trudnosc w menu
-            for b in (3, 3):
+            for b in (3, 3, 3):
                 g.BTNP[b] = True; g._update(); g._draw(); g.BTNP[b] = False
                 g.BTNP[4] = True; g._update(); g._draw(); g.BTNP[4] = False
+            for _ in range(20):
+                g._update(); g._draw()
+            assert g.st == "test", g.st
+            g.BTN[4] = g.BTN[5] = True
+            g._update(); g._draw()
+            g.BTN[4] = g.BTN[5] = False
+            for _ in range(20):
+                g._update()
             g.mi = 1
         g.BTNP[4] = True
         g._update(); g._draw()
