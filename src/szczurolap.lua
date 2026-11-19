@@ -1,5 +1,9 @@
--- szczurolap
--- podziemia wielkiego miasta
+-- szczurolap / ratcatcher
+-- podziemia kesselburga
+
+function setl()
+ T=split(lang==0 and "szczurolap|podziemia kesselburga|ruch: analog / krzyzak|o: cios palka  x: tryb psa|tryb psa: o = szczekniecie|trzymaj x: wycie bodo|2. analog (gracz 2): bodo|rekord: |start|jezyk: polski|trudnosc: latwa|trudnosc: normalna|glebokosc |sterujesz bodo|sterujesz ulrichem|kaganek zapalony|zniszcz gniazda: |olej do latarni|mieso! zdrowie wraca|bodo wstaje!|bodo cos wyczul!|fala szczurow!|bodo ranny! stan przy nim|wlaz w dol otwarty!|gniazdo zniszczone!|grimbald, krol szczurow, padl!|ulrich zginal...|ubite szczury: |nacisnij o|bodo wyje! szczury uciekaja|piwnice kesselburga|kanaly fleetgraben|groty przemytnikow z wapping|tunele szczuroludzi unterhaus|czelusci hollenschlundu|zniszcz gniazda i otworz wlaz|woda spowalnia, szczury zarazone|ciemne groty: oszczedzaj olej|szczuroludzie rzucaja strzalki|pokonaj krola grimbalda!" or "ratcatcher|beneath kesselburg|move: stick / d-pad|o: club   x: dog mode|dog mode: o = bark|hold x: bodo howls|2nd stick (player 2): bodo|best: |start|language: english|difficulty: easy|difficulty: normal|depth |controlling bodo|controlling ulrich|lamp lit|destroy nests: |lantern oil|meat! health restored|bodo is back up!|bodo smells a rat!|rat wave!|bodo is hurt! stand by him|the hatch is open!|nest destroyed!|grimbald the rat king falls!|ulrich has fallen...|rats killed: |press o|bodo howls! rats flee|kesselburg cellars|fleetgraben sewers|wapping smugglers' caves|unterhaus ratfolk tunnels|the hollenschlund|smash nests, open the hatch|water slows. plague rats ahead|dark caves: save your oil|ratfolk throw darts|slay grimbald the rat king!","|",false)
+end
 
 function ht(s)
  local t={}
@@ -13,8 +17,8 @@ function _init()
  local s=split("0000001101100101,0000101512410112,0011215624931524,0123456789abcdef",",",false)
  for i=1,4 do lt[i-1]=ht(s[i]) end
  th=split("0123456789abcdef,0123356789abcdef,012324f789abcdef,0123428789abcdef,012312d789abcdef",",",false)
- dn=split("piwnice,kanaly,jaskinie przemytnikow,tunele szczuroludzi,czelusci")
- hints=split("zniszcz gniazda i otworz wlaz|woda spowalnia, szczury zarazone|ciemne groty: oszczedzaj olej|szczuroludzie rzucaja strzalki|pokonaj szczurzego krola!","|",false)
+ lang,ez,mi=dget(1),dget(2)==0,1
+ setl()
  -- pokoje,rozmiar,erozja,woda,gniazda,zakamarki,kaganki,szczury
  prm={split"9,6,0,0,2,3,.6,1",split"9,6,0,1,2,4,.45,1",split"8,7,250,0,3,4,.35,2",split"12,4,60,0,3,6,.25,2",split"8,7,400,0,3,5,.2,2"}
  -- hp,predkosc,kolor,skala
@@ -157,7 +161,7 @@ end
 
 function spawn(k,x,y)
  local d=ek[k]
- return add(ents,{k=k,x=x,y=y,hp=d[1],sp=d[2],c=d[3],sz=d[4],f=0,fl=0,cd=30+rnd(60),st=0,wa=rnd(),hid=k==4})
+ return add(ents,{k=k,x=x,y=y,hp=d[1],sp=d[2]*(ez and .8 or 1),c=d[3],sz=d[4],f=0,fl=0,fe=0,cd=30+rnd(60),st=0,wa=rnd(),hid=k==4})
 end
 
 function gen()
@@ -279,7 +283,8 @@ end
 function newgame()
  dep,hp,oil,kills,dm,dual=1,5,100,0,false,false
  pl={x=0,y=0,fa=0,iv=0,cd=0,w=0,sw=0}
- dg={hp=4,iv=0,cd=0,bc=0,ex=0,rv=0,w=0}
+ dg={hp=4,iv=0,cd=0,bc=0,ex=0,rv=0,w=0,sta=100}
+ xh=0
  nextlvl()
 end
 
@@ -292,7 +297,7 @@ end
 function hitpl()
  if pl.iv<=0 then
   hp=hp-1
-  pl.iv,shk=45,6
+  pl.iv,shk=ez and 75 or 45,6
   sfx(3)
   burst(pl.x,pl.y,8,6)
  end
@@ -312,9 +317,9 @@ function hurt(e,n,a)
    sfx(7)
    if nests<=0 and ox then
     mset(ox,oy,8)
-    say("wlaz w dol otwarty!")
+    say(T[24])
    else
-    say("gniazdo zniszczone!")
+    say(T[25])
    end
   else
    kills=kills+1
@@ -342,17 +347,40 @@ function _update()
   upplay()
  elseif st=="intro" then
   if tm<0 then st="play" end
+ elseif st=="title" then
+  if btnp(2) then mi=max(mi-1,1) end
+  if btnp(3) then mi=min(mi+1,3) end
+  if tm<0 and (btnp(4) or btnp(5)) then
+   if mi==1 then
+    newgame()
+   elseif mi==2 then
+    lang=1-lang
+    dset(1,lang)
+    setl()
+   else
+    ez=not ez
+    dset(2,ez and 0 or 1)
+   end
+   sfx(4)
+  end
  elseif tm<0 and (btnp(4) or btnp(5)) then
-  if st=="title" then newgame() else st,tm="title",15 end
+  st,tm="title",15
  end
 end
 
 function upplay()
  if btn(0,1) or btn(1,1) or btn(2,1) or btn(3,1) then dual=true end
- if btnp(5) and not dg.dn then
-  dm=not dm
-  say(dm and "sterujesz psem" or "sterujesz szczurolapem")
+ -- x: krotko = tryb psa, przytrzymaj = wycie
+ if btn(5) then
+  xh=xh+1
+ else
+  if xh>0 and xh<8 and not dg.dn then
+   dm=not dm
+   say(T[dm and 14 or 15])
+  end
+  xh=0
  end
+ how=not dg.dn and dg.sta>0 and (xh>=8 or btn(5,1))
  local dx,dy=inp(0)
  local gx,gy=0,0
  if dm then
@@ -390,7 +418,7 @@ function upplay()
     addl(tx+i,ty+j)
     oil=oil-5
     sfx(8)
-    say("kaganek zapalony")
+    say(T[16])
    end
   end
  end
@@ -401,9 +429,9 @@ function upplay()
   nextlvl()
   return
  end
- if m==7 and msgt<0 then say("zniszcz gniazda szczurow: "..nests) end
+ if m==7 and msgt<0 then say(T[17]..nests) end
  -- olej
- if fr%40==0 and oil>0 then oil=oil-1 end
+ if fr%(ez and 60 or 40)==0 and oil>0 then oil=oil-1 end
  lr=1.4+oil/30+rnd(.25)
  if fr%8==0 then fd=bfs(tx,ty,18) end
  updog(gx,gy)
@@ -423,11 +451,11 @@ function upplay()
   if dst(it,pl)<.8 then
    if it.t==13 then
     oil=min(100,oil+40)
-    say("olej do latarni")
+    say(T[18])
    else
     hp=min(5,hp+2)
     dg.hp=min(4,dg.hp+2)
-    say("mieso! zdrowie wraca")
+    say(T[19])
    end
    sfx(4)
    del(its,it)
@@ -458,13 +486,25 @@ function updog(gx,gy)
    if dg.rv>60 then
     dg.dn,dg.hp,dg.rv=false,2,0
     sfx(4)
-    say("piesek wstaje!")
+    say(T[20])
    end
   else
    dg.rv=0
   end
   return
  end
+ -- wycie: szczury uciekaja od psa
+ if how then
+  dg.sta=dg.sta-1.2
+  if dg.sta<=0 then dg.sta=-30 end
+  if fr%12==0 then sfx(14) end
+  for e in all(ents) do
+   if e.k>0 and e.k<6 and dst(e,dg)<5 then e.fe,e.hid=15,false end
+  end
+  if msgt<0 then say(T[30]) end
+  return
+ end
+ dg.sta=min(dg.sta+.3,100)
  local mx,my,s=0,0,1.3
  if dm then
   mx,my=gx,gy
@@ -507,11 +547,11 @@ function updog(gx,gy)
   if e.hid and dst(e,dg)<3.5 then
    e.hid,dg.ex=false,30
    sfx(5)
-   say("piesek cos wyczul!")
+   say(T[21])
   end
  end
  -- szczekniecie
- if dg.bc<=0 and (btnp(4,1) or btnp(5,1) or dm and btnp(4)) then
+ if dg.bc<=0 and (btnp(4,1) or dm and btnp(4)) then
   dg.bc,dg.ex=45,20
   sfx(5)
   for e in all(ents) do
@@ -531,14 +571,14 @@ function upe(e)
  -- gniazdo: fale
  if e.k==0 then
   if e.cd<=0 and d<7 then
-   e.cd=300-dep*30
-   for i=1,2+dep do
+   e.cd=(ez and 360 or 300)-dep*30
+   for i=1,dep+(ez and 1 or 2) do
     local x,y=e.x+rnd(10)-5,e.y+rnd(10)-5
     if hit(x,y,3) then x,y=e.x,e.y end
     spawn(rnd(pools[dep]),x,y).ag=true
    end
    sfx(6)
-   say("fala szczurow!")
+   say(T[22])
   end
   return
  end
@@ -553,6 +593,14 @@ function upe(e)
  end
  if e.st>0 then
   e.st=e.st-1
+  return
+ end
+ if e.fe>0 then
+  e.fe=e.fe-1
+  local mx,my=norm(e.x-dg.x,e.y-dg.y)
+  mv(e,mx*e.sp*1.3,my*e.sp*1.3)
+  e.f=e.f+.3
+  e.fx=mx<0
   return
  end
  local tg=pl
@@ -574,7 +622,7 @@ function upe(e)
  if e.k==5 and e.cd<=0 and d<6 and l>0 then
   local a=atan2(pl.x-e.x,pl.y-e.y)
   add(shots,{x=e.x,y=e.y,dx=cos(a)*2,dy=sin(a)*2,t=60})
-  e.cd=80
+  e.cd=ez and 120 or 80
   sfx(10)
  end
  -- krol przyzywa
@@ -595,7 +643,7 @@ function upe(e)
   sfx(3)
   if dg.hp<=0 then
    dg.dn,dm=true,false
-   say("piesek ranny! stan przy nim")
+   say(T[23])
   end
  end
 end
@@ -620,35 +668,36 @@ end
 
 function drtitle()
  cls()
- print("\6w\6tszczurolap",24,14,9)
- ctr("podziemia wielkiego miasta",30,5)
+ print("\6w\6t"..T[1],24,8,9)
+ ctr(T[2],24,5)
  local x,a=fr*1.5%200-40,flr(fr/4)%2
- spr(16+a,x,46)
- spr(18+a,x-12,46)
- for i=1,3 do spr(21+a,x-14-i*10,46) end
- print("ruch: analog / krzyzak",8,62,6)
- print("o: cios palka   x: tryb psa",8,70,6)
- print("tryb psa: o = szczekniecie",8,78,6)
- print("2. analog (gracz 2): pies",8,86,6)
- ctr("rekord: "..dget(0).." szczurow",98,13)
- if fr%30<20 then ctr("nacisnij o aby zaczac",112,7) end
+ spr(16+a,x,36)
+ spr(18+a,x-12,36)
+ for i=1,3 do spr(21+a,x-14-i*10,36) end
+ for i=3,7 do print(T[i],4,34+i*7,6) end
+ for i=1,3 do
+  local c=mi==i and 10 or 5
+  print(T[i==3 and (ez and 11 or 12) or i+8],20,82+i*8,c)
+  if mi==i then print(">",12,82+i*8,c) end
+ end
+ ctr(T[8]..dget(0),120,13)
 end
 
 function drintro()
  cls()
- ctr("glebokosc "..dep.."/5",44,5)
- ctr(dn[dep],56,9)
- ctr(hints[dep],72,6)
+ ctr(T[13]..dep.."/5",44,5)
+ ctr(T[30+dep],56,9)
+ ctr(T[35+dep],72,6)
 end
 
 function drend()
  cls()
  local w=st=="win"
- ctr(w and "szczurzy krol pokonany!" or "szczurolap zginal...",40,w and 10 or 8)
- ctr(dn[dep],56,6)
- ctr("ubite szczury: "..kills,66,6)
- ctr("rekord: "..dget(0),76,13)
- if tm<0 and fr%30<20 then ctr("nacisnij o",100,7) end
+ ctr(T[w and 26 or 27],40,w and 10 or 8)
+ ctr(T[30+dep],56,6)
+ ctr(T[28]..kills,66,6)
+ ctr(T[8]..dget(0),76,13)
+ if tm<0 and fr%30<20 then ctr(T[29],100,7) end
 end
 
 function drplay()
@@ -727,6 +776,7 @@ function drplay()
  pal()
  if dg.ex>0 then print("!",dg.x-1,dg.y-13,10) end
  if dm and fr%30<20 then print("v",dg.x-1,dg.y-13,11) end
+ if how and fr%8<5 then print("))",dg.x+3,dg.y-10,12) end
  if dg.dn and dg.rv>0 then rectfill(dg.x-4,dg.y-9,dg.x-4+dg.rv/7.5,dg.y-8,11) end
  -- gracz
  if pl.iv<=0 or fr%4<2 then spr(16+flr(pl.w)%2,pl.x-4,pl.y-6,1,1,pl.fl) end
@@ -750,6 +800,7 @@ function drplay()
  pal()
  spr(18,37,0)
  print(dg.dn and "x" or dg.hp,46,2,dm and 11 or 9)
+ if dg.sta>0 then line(37,7,37+dg.sta*.07,7,12) end
  spr(13,52,0)
  rect(60,2,91,5,5)
  if oil>0 then rectfill(61,3,61+oil*.29,4,oil<20 and 8 or 9) end

@@ -93,6 +93,11 @@ def simulate(games):
     g._init()
     stats = {"levels": 0, "deaths": 0, "wins": 0, "frames": 0}
     for game in range(games):
+        if game % 3 == 1:  # przelacz jezyk i trudnosc w menu
+            for b in (3, 3):
+                g.BTNP[b] = True; g._update(); g._draw(); g.BTNP[b] = False
+                g.BTNP[4] = True; g._update(); g._draw(); g.BTNP[4] = False
+            g.mi = 1
         g.BTNP[4] = True
         g._update(); g._draw()
         g.BTNP[4] = False
@@ -104,6 +109,8 @@ def simulate(games):
                 for i in range(4):
                     g.BTN[i] = random.random() < .3
                     g.BTN[8 + i] = random.random() < .05
+                g.BTN[5] = random.random() < .25   # krotkie/dlugie X: tryb psa / wycie
+                g.BTN[13] = random.random() < .05  # X gracza 2: wycie
             for i in (4, 5, 12, 13):
                 g.BTNP[i] = random.random() < (.2 if i == 4 else .02)
             g.hp = max(g.hp, 2) if game % 2 == 0 else g.hp  # co druga gra niesmiertelny
@@ -127,6 +134,7 @@ def simulate(games):
                 break
         g.st = "title"
         g.tm = -1
+    stats["lang"], stats["easy"] = g.lang, g.ez
     return stats
 
 

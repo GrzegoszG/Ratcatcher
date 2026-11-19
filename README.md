@@ -1,18 +1,21 @@
 # Szczurołap (Ratcatcher)
 
-Gra na PICO-8 o szczurołapie i jego psie, schodzących w coraz głębsze podziemia
-wielkiego miasta low fantasy. Widok z góry, proceduralnie generowane poziomy,
+Gra na PICO-8 o szczurołapie **Ulrichu** i jego psie **Bodo**, schodzących w coraz
+głębsze podziemia miasta **Kesselburg** (low fantasy). Widok z góry, proceduralnie generowane poziomy,
 światło jako kluczowa mechanika.
 
 Kartridż: **`szczurolap.p8`** (gotowy do wgrania).
 
 ## Poziomy
 
-1. **Piwnice** – nauka: gniazda, kaganki, olej.
-2. **Kanały** – kanały wodne spowalniają, pojawiają się zarażone (zielone) szczury.
-3. **Jaskinie przemytników** – nieregularne groty, duże szczury, mniej zapalonych kaganków.
-4. **Tunele szczuroludzi** – wąskie tunele, szczuroludzie rzucający strzałkami.
-5. **Czeluści** – Szczurzy Król przyzywający kolejne szczury. Pokonaj go, by wygrać.
+1. **Piwnice Kesselburga** – nauka: gniazda, kaganki, olej.
+2. **Kanały Fleetgraben** – woda spowalnia, pojawiają się zarażone (zielone) szczury.
+3. **Groty przemytników z Wapping** – nieregularne groty, duże szczury, mniej zapalonych kaganków.
+4. **Tunele szczuroludzi Unterhaus** – wąskie tunele, szczuroludzie rzucający strzałkami.
+5. **Czeluści Höllenschlundu** – Grimbald, Król Szczurów, przyzywa kolejne szczury. Pokonaj go, by wygrać.
+
+Nazwy własne są wzorowane na historycznych nazwach angielskich i niemieckich
+(Fleet Ditch, Wapping, Höllenschlund, imiona Ulrich, Bodo, Grimbald).
 
 ## Mechaniki
 
@@ -27,6 +30,9 @@ Kartridż: **`szczurolap.p8`** (gotowy do wgrania).
   Wykrywa je pies (węch), szczeknięcie albo jasne światło latarni.
 - **Pies** walczy sam, gryzie szczury i wywęszy ukryte. Gdy zostanie ranny, stań przy
   nim przez chwilę, żeby go podnieść. Mięso leczy szczurołapa i psa.
+- **Wycie Bodo** (przytrzymanie X): pies staje i wyje, a szczury w promieniu ok. 5 kratek
+  uciekają od niego (poza królem). Zużywa wytrzymałość psa (niebieski pasek pod ikoną
+  psa). Po wyczerpaniu pies musi chwilę odpocząć.
 
 ## Sterowanie
 
@@ -34,10 +40,12 @@ Kartridż: **`szczurolap.p8`** (gotowy do wgrania).
 |---|---|
 | lewy analog / krzyżak | ruch szczurołapa |
 | **O** | cios pałką |
-| **X** | przełącz: sterowanie psem / szczurołapem |
+| **X** (krótko) | przełącz: sterowanie psem / szczurołapem |
+| **X** (przytrzymaj) | wycie Bodo, odstrasza szczury |
 | **O** w trybie psa | szczeknięcie (odsłania ukryte szczury, ogłusza pobliskie) |
 | prawy analog (= gracz 2) | ruch psa w trybie psa |
-| O / X gracza 2 | szczeknięcie |
+| O gracza 2 | szczeknięcie |
+| X gracza 2 (trzymany) | wycie |
 
 Gra sama wykrywa, czy drugi analog działa. Jeśli wejście gracza 2 nigdy się nie pojawi,
 w trybie psa **lewy analog steruje psem**, a szczurołap stoi w miejscu. Pies nie może
@@ -49,10 +57,26 @@ działają jak krzyżak. Żeby prawy analog sterował psem, zmapuj go na kierunk
 sterowania emulatora/portu PICO-8 (gptokeyb lub mapowanie RetroArch dla portu 2).
 Bez tego gra działa w trybie jednego analogu opisanym wyżej.
 
+## Menu, język i trudność
+
+W menu tytułowym strzałkami góra/dół wybierasz **start**, **język** (polski bez
+ogonków / angielski) i **trudność** (łatwa domyślnie / normalna). Wybór zapisuje się
+w pamięci kartridża.
+
+Poziom łatwy daje wolniejsze szczury (×0.8), mniejsze fale, dłuższą nietykalność po
+ciosie, wolniejsze zużycie oleju i rzadsze strzałki szczuroludzi.
+
+## Spust zamiast X?
+
+PICO-8 nie widzi spustów (L/R) ani analogów, a jedynie 6 przycisków na gracza. Dlatego
+wycie jest pod **przytrzymanym X**. Jeśli system konsoli mapuje spust na X albo na
+X gracza 2, przytrzymanie spustu zadziała tak samo.
+
 ## Wgranie na Anbernic RG35XX H
 
-- **Oficjalne PICO-8** (np. muOS / Knulli z `pico8_64` w folderze BIOS): skopiuj
-  `szczurolap.p8` do `ROMS/PICO8` (lub `roms/pico8`) na karcie SD.
+- **Oficjalne PICO-8** (stock OS, muOS, Knulli): skopiuj `szczurolap.p8` do folderu
+  z grami PICO-8 na karcie SD (np. `Roms/PICO8`). Na stock OS drugi analog
+  prawdopodobnie nie da się przypisać do gracza 2, więc gra użyje trybu jednego analogu.
 - **Fake-08 / RetroArch** (stock OS, bez licencji PICO-8): ten sam plik do folderu
   `PICO8`/`PICO-8`. Fake-08 może nie obsłużyć dużego napisu w menu tytułowym.
   Sama gra używa standardowego API 0.2.x.
